@@ -1,0 +1,149 @@
+import './App.css';
+import { signInWithGoogle } from './google/firebase'
+
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Google Authentication</h1>
+      <button onClick={signInWithGoogle}>Sign In with Google</button>
+      <h1>{localStorage.getItem('name')}</h1>  
+      <h1>{localStorage.getItem('email')}</h1>  
+      <img src={localStorage.getItem('profilePic')}/>
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+// ===========================================================================
+        // function move(array, from, to) {
+        //     if (to === from) return array[to];
+
+        //     var target = array[from];
+        //     var increment = to < from ? -1 : 1;
+
+        //     for (var k = from; k != to; k += increment) {
+        //         array[k] = array[k + increment];
+        //     }
+        //     array[to] = target;
+        //     return array;
+        // }
+        // let b = move(data, e1, 0)
+        // let a = move(b, e2, 1)
+        // ===============================================================================
+
+        // Array.prototype.move = function (from, to) {
+        //     this.splice(to, 0, this.splice(from, 1)[0]);
+        //     return this;
+        // };
+        // let a = data.move(e1, 0).move((e2 + 1), 1).move((e3 + 1), 2).move((e4 + 1), 3).move((e5 + 2), 4).move((e6), 5)
+
+
+        // _____________________________Ranking card _________________________________________________
+
+router.get("/eventDatapp", async (req, res) => {
+    try {
+        const data = await EVENT.find({ status: "publish" });
+        const Rankdata = await RANKING.findOne();
+
+        let number1 = Rankdata.number1;
+        let number2 = Rankdata.number2;
+        let number3 = Rankdata.number3;
+        let number4 = Rankdata.number4;
+        let number5 = Rankdata.number5;
+        let number6 = Rankdata.number6;
+
+        let e1 = data.findIndex((p) => p._id == number1);
+        let e2 = data.findIndex((p) => p._id == number2);
+        let e3 = data.findIndex((p) => p._id == number3);
+        let e4 = data.findIndex((p) => p._id == number4);
+        let e5 = data.findIndex((p) => p._id == number5);
+        let e6 = data.findIndex((p) => p._id == number6);
+        console.log([e1, e2, e3, e4, e5, e6]);
+        const changeValuePosition = (arr, init, target) => {
+            [arr[init], arr[target]] = [arr[target], arr[init]];
+            return arr;
+        };
+
+        let b = changeValuePosition(data, e1, 0);
+        let c = changeValuePosition(b, e2, 1);
+        let d = changeValuePosition(c, e3, 2);
+        let e = changeValuePosition(d, e4, 3);
+        let f = changeValuePosition(e, e5, 4);
+        let a = changeValuePosition(f, e6, 5);
+        res.status(200).json(a);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// _________________________Add cards in ranking db________________________________
+
+router.post("/addRank", async (req, res) => {
+    const { number1, number2, number3, number4, number5, number6 } = req.body;
+    try {
+        const data = new RANKING({
+            number1,
+            number2,
+            number3,
+            number4,
+            number5,
+            number6,
+        });
+        const shareData = await data.save();
+        res.status(201).json(shareData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.put("/addRank/:id", async (req, res) => {
+    const { number1, number2, number3, number4, number5, number6 } = req.body;
+    const { id } = req.params;
+    try {
+        const data = await RANKING.findByIdAndUpdate(
+            id,
+            { number1, number2, number3, number4, number5, number6 },
+            { new: true }
+        );
+        const shareData = await data.save();
+        res.status(201).json(shareData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+-----------------facebookLogin------------------------
+const session=require("express-session")
+const passport=require("passport")
+const facebookStrategy = require("passport-facebook").Strategy
+app.use(passport.initialize())
+app.use(passport.session())
+passport.serializeUser(function (user, cb) {
+  cb(null, user);  
+})
+passport.deserializeUser(function (obj, cb) {
+  cb(null, obj);
+})
+passport.use(new facebookStrategy({
+  clientID: "1150082949205492",
+  clientSecret: "efc2ebc592e1cc46286aea9339c97a10",
+  callbackURL: "http://localhost:3000/auth/facebook/callback",
+  profileFields: ['id',"displayName"],
+  
+},
+function (accessToken, refreshToken, profile, done) {
+  // console.log(accessToken, refreshToken, profile);
+
+  // const user = {};
+  return done(null, profile);
+  }))

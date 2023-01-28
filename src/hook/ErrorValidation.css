@@ -1,0 +1,16 @@
+.error-text{
+    color: red;
+    font-size: small;
+}
+
+.invalid {
+     border-color: red;
+}
+
+button:disabled,
+button:disabled :hover,
+button:disabled:active{
+    background-color: transparent;
+    cursor: not-allowed;
+}
+
